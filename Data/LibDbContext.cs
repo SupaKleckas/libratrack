@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using LibraTrack.Data.Entities;
+using LibraTrack.Auth.Model;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace LibraTrack.Data
 {
-	public class LibDbContext : DbContext
+	public class LibDbContext : IdentityDbContext<User>
 	{
 		private readonly IConfiguration _configuration;
 		public DbSet<Library> Libraries { get; set; }

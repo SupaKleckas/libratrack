@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using LibraTrack.Auth.Model;
+using System.ComponentModel.DataAnnotations;
 
 namespace LibraTrack.Data.Entities
 {
@@ -10,7 +12,11 @@ namespace LibraTrack.Data.Entities
 
 		public required Library Library { get; set; }
 
-	}
+        [Required]
+        public required string UserId { get; set; }
+        public User User { get; set; }
+
+    }
 
 	public record SectionDto(int Id, string Title, int BookCount);
 	public record CreateSectionDto(string Title);

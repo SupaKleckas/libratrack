@@ -2,6 +2,11 @@
 using LibraTrack.Data;
 using Microsoft.EntityFrameworkCore;
 using O9d.AspNet.FluentValidation;
+using Microsoft.AspNetCore.Http;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using LibraTrack.Auth.Model;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LibraTrack
 {
@@ -9,13 +14,13 @@ namespace LibraTrack
 	{
 		public static void AddLibraryApi(RouteGroupBuilder librariesGroup)
 		{
-			librariesGroup.MapGet("libraries", async (LibDbContext dbContext, CancellationToken cancellationToken) =>
+			librariesGroup.MapGet("libraries", [Authorize(Roles = Roles.User)] async (LibDbContext dbContext, CancellationToken cancellationToken) =>
 			{
 				return (await dbContext.Libraries.ToListAsync(cancellationToken)).Select(library => new LibraryDto(library.Id, library.Name, library.Address));
 
 			});
 
-			librariesGroup.MapGet("libraries/{libraryId}", async (int libraryId, LibDbContext dbContext) =>
+			librariesGroup.MapGet("libraries/{libraryId}", [Authorize(Roles = Roles.User)] async (int libraryId, LibDbContext dbContext) =>
 			{
 				var library = await dbContext.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId);
 				if (library == null)
@@ -24,9 +29,13 @@ namespace LibraTrack
 				return Results.Ok(new LibraryDto(library.Id, library.Name, library.Address));
 			});
 
-			librariesGroup.MapPost("libraries", async ([Validate] CreateLibraryDto createLibraryDto, LibDbContext dbContext) =>
+			librariesGroup.MapPost("libraries", [Authorize(Roles = Roles.Admin)] async ([Validate] CreateLibraryDto createLibraryDto, HttpContext httpContext, LibDbContext dbContext) =>
 			{
-				var library = new Library { Name = createLibraryDto.Name, Address = createLibraryDto.Address };
+				var library = new Library { 
+					Name = createLibraryDto.Name, 
+					Address = createLibraryDto.Address,
+                    UserId = httpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub)
+                };
 
 				dbContext.Libraries.Add(library);
 				await dbContext.SaveChangesAsync();
@@ -34,7 +43,7 @@ namespace LibraTrack
 				return Results.Created($"/api/libraries/{library.Id}", new LibraryDto(library.Id, library.Name, library.Address));
 			});
 
-			librariesGroup.MapPut("libraries/{libraryId}", async (int libraryId, [Validate] UpdateLibraryDto updateLibraryDto, LibDbContext dbContext) =>
+			librariesGroup.MapPut("libraries/{libraryId}", [Authorize(Roles = Roles.Admin)] async (int libraryId, [Validate] UpdateLibraryDto updateLibraryDto, LibDbContext dbContext) =>
 			{
 				var library = await dbContext.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId);
 				if (library == null)
@@ -47,7 +56,7 @@ namespace LibraTrack
 				return Results.Ok(new LibraryDto(library.Id, library.Name, library.Address));
 			});
 
-			librariesGroup.MapDelete("libraries/{libraryId}", async (int libraryId, LibDbContext dbContext) =>
+			librariesGroup.MapDelete("libraries/{libraryId}", [Authorize(Roles = Roles.Admin)] async (int libraryId, LibDbContext dbContext) =>
 			{
 				var library = await dbContext.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId);
 				if (library == null)
