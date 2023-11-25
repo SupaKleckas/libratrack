@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
+using LibraTrack.Auth.Model;
 using Npgsql.PostgresTypes;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 
 namespace LibraTrack.Data.Entities
@@ -14,7 +16,12 @@ namespace LibraTrack.Data.Entities
 		public required string Gendre { get; set; }
 		public required Section Section { get; set; }
 
-	}
+
+        [Required]
+        public required string UserId { get; set; }
+        public User User { get; set; }
+
+    }
 
 	public record BookDto(int Id, string Title, int PublishYear, string Publisher, string Author, string Gendre);
 	public record CreateBookDto(string Title, int PublishYear, string Publisher, string Author, string Gendre);

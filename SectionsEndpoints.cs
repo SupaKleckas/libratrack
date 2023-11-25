@@ -4,6 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using O9d.AspNet.FluentValidation;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using System.ComponentModel.Design;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+using LibraTrack.Auth.Model;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LibraTrack
 {
@@ -11,14 +16,14 @@ namespace LibraTrack
 	{
 		public static void AddSectionApi(RouteGroupBuilder sectionsGroup)
 		{
-			sectionsGroup.MapGet("sections", async (int libraryId, LibDbContext dbContext, CancellationToken cancellationToken) =>
+			sectionsGroup.MapGet("sections", [Authorize(Roles = Roles.User)] async (int libraryId, LibDbContext dbContext, CancellationToken cancellationToken) =>
 			{
 				return (await dbContext.Sections.Include(s => s.Library).ToListAsync(cancellationToken))
 					.Where(s => s.Library.Id == libraryId)
 					.Select(section => new SectionDto(section.Id, section.Title, section.BookCount));
 			});
 
-			sectionsGroup.MapGet("sections/{sectionId}", async (int libraryId, int sectionId, LibDbContext dbContext) =>
+			sectionsGroup.MapGet("sections/{sectionId}", [Authorize(Roles = Roles.User)] async (int libraryId, int sectionId, LibDbContext dbContext) =>
 			{
 				var section = await dbContext.Sections.FirstOrDefaultAsync<Section>(s => s.Library.Id == libraryId && s.Id == sectionId);
 				if (section == null)
@@ -27,7 +32,7 @@ namespace LibraTrack
 				return Results.Ok(new SectionDto(section.Id, section.Title, section.BookCount));
 			});
 
-			sectionsGroup.MapPost("sections", async (int libraryId, [Validate] UpdateSectionDto createSectionDto, LibDbContext dbContext) =>
+			sectionsGroup.MapPost("sections", [Authorize(Roles = Roles.Admin)] async (int libraryId, [Validate] UpdateSectionDto createSectionDto, HttpContext httpContext, LibDbContext dbContext) =>
 			{
 				var library = await dbContext.Libraries.FirstOrDefaultAsync<Library>(lib => lib.Id == libraryId);
 				if (library == null)
@@ -39,8 +44,9 @@ namespace LibraTrack
 				{
 					Title = createSectionDto.Title,
 					BookCount = 0,
-					Library = library
-				};
+					Library = library,
+                    UserId = httpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub)
+                };
 
 				dbContext.Sections.Add(section);
 				await dbContext.SaveChangesAsync();
@@ -48,7 +54,7 @@ namespace LibraTrack
 				return Results.Created($"/api/libraries/{library.Id}/sections/{section.Id}", new SectionDto(section.Id, section.Title, section.BookCount));
 			});
 
-			sectionsGroup.MapPut("sections/{sectionId}", async (int libraryId, int sectionId, [Validate] UpdateSectionDto updateSectionDto, LibDbContext dbContext) =>
+			sectionsGroup.MapPut("sections/{sectionId}", [Authorize(Roles = Roles.Admin)] async (int libraryId, int sectionId, [Validate] UpdateSectionDto updateSectionDto, LibDbContext dbContext) =>
 			{
 				var section = await dbContext.Sections.FirstOrDefaultAsync(s => s.Library.Id == libraryId && s.Id == sectionId);
 				if (section == null)
@@ -63,7 +69,7 @@ namespace LibraTrack
 				return Results.Ok(new SectionDto(section.Id, section.Title, section.BookCount));
 			});
 
-			sectionsGroup.MapDelete("sections/{sectionId}", async (int libraryId, int sectionId, LibDbContext dbContext) =>
+			sectionsGroup.MapDelete("sections/{sectionId}", [Authorize(Roles = Roles.Admin)] async (int libraryId, int sectionId, LibDbContext dbContext) =>
 			{
 				var section = await dbContext.Sections.FirstOrDefaultAsync(s => s.Library.Id == libraryId && s.Id == sectionId);
 				if (section == null)

@@ -2,7 +2,10 @@
 using LibraTrack.Data;
 using Microsoft.EntityFrameworkCore;
 using O9d.AspNet.FluentValidation;
-using System.Linq;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using LibraTrack.Auth.Model;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LibraTrack
 {
@@ -10,14 +13,14 @@ namespace LibraTrack
 	{
 		public static void AddBookApi(RouteGroupBuilder booksGroup)
 		{
-			booksGroup.MapGet("books", async (int libraryId, int sectionId, LibDbContext dbContext, CancellationToken cancellationToken) =>
+			booksGroup.MapGet("books", [Authorize(Roles = Roles.User)] async (int libraryId, int sectionId, LibDbContext dbContext, CancellationToken cancellationToken) =>
 			{
 				return (await dbContext.Books.Include(i => i.Section).Include(i => i.Section.Library).ToListAsync(cancellationToken))
 					.Where(i => i.Section.Library.Id == libraryId && i.Section.Id == sectionId)
 					.Select(b => new BookDto(b.Id, b.Title, b.PublishYear, b.Publisher, b.Author, b.Gendre));
 			});
 
-			booksGroup.MapGet("books/{bookId}", async (int libraryId, int sectionId, int bookId, LibDbContext dbContext) =>
+			booksGroup.MapGet("books/{bookId}", [Authorize(Roles = Roles.User)] async (int libraryId, int sectionId, int bookId, LibDbContext dbContext) =>
 			{
 				var book = await dbContext.Books.FirstOrDefaultAsync<Book>(b => b.Id == bookId && b.Section.Id == sectionId && b.Section.Library.Id == libraryId);
 				if (book == null)
@@ -26,7 +29,7 @@ namespace LibraTrack
 				return Results.Ok(new BookDto(book.Id, book.Title, book.PublishYear, book.Publisher, book.Author, book.Gendre));
 			});
 
-			booksGroup.MapPost("books", async (int libraryId, int sectionId, [Validate] CreateBookDto createBookDto, LibDbContext dbContext) =>
+			booksGroup.MapPost("books", [Authorize(Roles = Roles.User)] async (int libraryId, int sectionId, [Validate] CreateBookDto createBookDto, HttpContext httpContext, LibDbContext dbContext) =>
 			{
 				var section = await dbContext.Sections.FirstOrDefaultAsync<Section>(sec => sec.Id == sectionId);
 				if (section == null)
@@ -41,7 +44,8 @@ namespace LibraTrack
 					Publisher = createBookDto.Publisher,
 					Author = createBookDto.Author,
 					Gendre = createBookDto.Gendre,
-					Section = section
+					Section = section,
+					UserId = httpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub)
 				};
 
 				dbContext.Books.Add(book);
@@ -52,7 +56,7 @@ namespace LibraTrack
 					new BookDto(book.Id, book.Title, book.PublishYear, book.Publisher, book.Author, book.Gendre));
 			});
 
-			booksGroup.MapPut("books/{bookId}", async (int libraryId, int sectionId, int bookId, [Validate] UpdateBookDto updateBookDto, LibDbContext dbContext) =>
+			booksGroup.MapPut("books/{bookId}", [Authorize(Roles = Roles.User)] async (int libraryId, int sectionId, int bookId, [Validate] UpdateBookDto updateBookDto, LibDbContext dbContext) =>
 			{
 				var book = await dbContext.Books.FirstOrDefaultAsync<Book>(b => b.Id == bookId && b.Section.Id == sectionId && b.Section.Library.Id == libraryId);
 				if (book == null)
@@ -69,7 +73,7 @@ namespace LibraTrack
 				return Results.Ok(new BookDto(book.Id, book.Title, book.PublishYear, book.Publisher, book.Author, book.Gendre));
 			});
 
-			booksGroup.MapDelete("books/{bookId}", async (int libraryId, int sectionId, int bookId, LibDbContext dbContext) =>
+			booksGroup.MapDelete("books/{bookId}", [Authorize(Roles = Roles.User)] async (int libraryId, int sectionId, int bookId, LibDbContext dbContext) =>
 			{
 				var book = await dbContext.Books.FirstOrDefaultAsync<Book>(b => b.Id == bookId && b.Section.Id == sectionId && b.Section.Library.Id == libraryId);
 				if (book == null)

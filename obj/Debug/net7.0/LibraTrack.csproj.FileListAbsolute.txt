@@ -38,3 +38,17 @@ D:\Documents\Uni\5 Semestras\Saityno taikomuju programu projektavimas\LibraTrack
 D:\Documents\Uni\5 Semestras\Saityno taikomuju programu projektavimas\LibraTrack\bin\Debug\net7.0\Microsoft.Extensions.DependencyModel.dll
 D:\Documents\Uni\5 Semestras\Saityno taikomuju programu projektavimas\LibraTrack\bin\Debug\net7.0\Mono.TextTemplating.dll
 D:\Documents\Uni\5 Semestras\Saityno taikomuju programu projektavimas\LibraTrack\bin\Debug\net7.0\System.CodeDom.dll
+D:\Documents\Uni\5 Semestras\Saityno taikomuju programu projektavimas\LibraTrack\bin\Debug\net7.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\Documents\Uni\5 Semestras\Saityno taikomuju programu projektavimas\LibraTrack\bin\Debug\net7.0\Microsoft.AspNetCore.Cryptography.Internal.dll
+D:\Documents\Uni\5 Semestras\Saityno taikomuju programu projektavimas\LibraTrack\bin\Debug\net7.0\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+D:\Documents\Uni\5 Semestras\Saityno taikomuju programu projektavimas\LibraTrack\bin\Debug\net7.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+D:\Documents\Uni\5 Semestras\Saityno taikomuju programu projektavimas\LibraTrack\bin\Debug\net7.0\Microsoft.Extensions.Identity.Core.dll
+D:\Documents\Uni\5 Semestras\Saityno taikomuju programu projektavimas\LibraTrack\bin\Debug\net7.0\Microsoft.Extensions.Identity.Stores.dll
+D:\Documents\Uni\5 Semestras\Saityno taikomuju programu projektavimas\LibraTrack\bin\Debug\net7.0\Microsoft.Extensions.Options.dll
+D:\Documents\Uni\5 Semestras\Saityno taikomuju programu projektavimas\LibraTrack\bin\Debug\net7.0\Microsoft.IdentityModel.JsonWebTokens.dll
+D:\Documents\Uni\5 Semestras\Saityno taikomuju programu projektavimas\LibraTrack\bin\Debug\net7.0\Microsoft.IdentityModel.Logging.dll
+D:\Documents\Uni\5 Semestras\Saityno taikomuju programu projektavimas\LibraTrack\bin\Debug\net7.0\Microsoft.IdentityModel.Protocols.dll
+D:\Documents\Uni\5 Semestras\Saityno taikomuju programu projektavimas\LibraTrack\bin\Debug\net7.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+D:\Documents\Uni\5 Semestras\Saityno taikomuju programu projektavimas\LibraTrack\bin\Debug\net7.0\Microsoft.IdentityModel.Tokens.dll
+D:\Documents\Uni\5 Semestras\Saityno taikomuju programu projektavimas\LibraTrack\bin\Debug\net7.0\System.IdentityModel.Tokens.Jwt.dll
+D:\Documents\Uni\5 Semestras\Saityno taikomuju programu projektavimas\LibraTrack\bin\Debug\net7.0\System.Security.Permissions.dll
