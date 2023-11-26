@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using LibraTrack.API.Auth.Model;
+using LibraTrack.Auth.Model;
 using System.ComponentModel.DataAnnotations;
 
 namespace LibraTrack.Data.Entities
