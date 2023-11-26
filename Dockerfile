@@ -1,19 +1,19 @@
 # https://hub.docker.com/_/microsoft-dotnet
 FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS build
-WORKDIR /source
+WORKDIR ./
 
 # copy csproj and restore as distinct layers
-COPY *.csproj .
-RUN dotnet restore -r linux-musl-x64 /p:PublishReadyToRun=true
+COPY *.csproj ./
+RUN dotnet restore -r /p:PublishReadyToRun=true
 
 # copy everything else and build app
-COPY . .
-RUN dotnet publish -c release -o /app -r linux-musl-x64 --self-contained true --no-restore /p:PublishReadyToRun=true /p:PublishSingleFile=true
+COPY . ./
+RUN dotnet publish -c release -o /app -r --self-contained true --no-restore /p:PublishReadyToRun=true /p:PublishSingleFile=true
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/runtime-deps:7.0-alpine-amd64
-WORKDIR /app
-COPY --from=build /app .
+WORKDIR ./
+COPY --from=build ./ .
 ENTRYPOINT ["./LibraTrack"]
 
 ENV \
