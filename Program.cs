@@ -39,6 +39,9 @@ internal class Program
         };
         connectionString.Pooling = true;
 
+		DbConnection connection = new NpgsqlConnection(connectionString.ConnectionString);
+		connection.Open();
+
 
         var builder = WebApplication.CreateBuilder(args);
 		builder.Services.AddValidatorsFromAssemblyContaining<Program>();
