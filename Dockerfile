@@ -1,6 +1,6 @@
 # https://hub.docker.com/_/microsoft-dotnet
 FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS build
-WORKDIR .
+WORKDIR /source
 
 # copy csproj and restore as distinct layers
 COPY *.csproj .
@@ -14,12 +14,12 @@ RUN dotnet publish -c release -o /app -r linux-musl-x64 --self-contained true --
 FROM mcr.microsoft.com/dotnet/runtime-deps:7.0-alpine-amd64
 WORKDIR /app
 COPY --from=build /app .
-ENTRYPOINT ["."]
+ENTRYPOINT ["./LibraTrack"]
 
 ENV \
 	DOTNET_SYSTEM_GLOBILAZATION_INVARIANT=false \
 	LC_ALL=en_US.UTF8 \
 	LANG=en_US.UTF8
 RUN apk add --no-cache \
-	icu-data-full
+	icu-data-full \
 	icu-libs
