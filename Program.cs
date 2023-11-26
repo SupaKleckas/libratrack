@@ -6,6 +6,7 @@ using System.Data.Common;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Identity;
+using Npgsql;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -21,7 +22,25 @@ internal class Program
 	{
 		JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); //using standart
 
-		var builder = WebApplication.CreateBuilder(args);
+        var connectionString = new NpgsqlConnectionStringBuilder()
+        {
+            // The Cloud SQL proxy provides encryption between the proxy and instance.
+            SslMode = SslMode.Require,
+
+            // Note: Saving credentials in environment variables is convenient, but not
+            // secure - consider a more secure solution such as
+            // Cloud Secret Manager (https://cloud.google.com/secret-manager) to help
+            // keep secrets safe.
+            Host = Environment.GetEnvironmentVariable("/cloudsql/vernal-guide-406312:europe-west3:postgres"), // e.g. '/cloudsql/project:region:instance'
+            Username = Environment.GetEnvironmentVariable("postgres"), // e.g. 'my-db-user
+            Password = Environment.GetEnvironmentVariable("dbpostgres"), // e.g. 'my-db-password'
+            Database = Environment.GetEnvironmentVariable("postgres"), // e.g. 'my-database'
+			TrustServerCertificate = true
+        };
+        connectionString.Pooling = true;
+
+
+        var builder = WebApplication.CreateBuilder(args);
 		builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 		builder.Services.AddDbContext<LibDbContext>();
 		builder.Services.AddTransient<JwtTokenService>();
