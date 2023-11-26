@@ -31,7 +31,7 @@ namespace LibraTrack
 
 			librariesGroup.MapPost("libraries", [Authorize(Roles = Roles.Admin)] async ([Validate] CreateLibraryDto createLibraryDto, HttpContext httpContext, LibDbContext dbContext) =>
 			{
-				var library = new Library { 
+				var library = new Library {
 					Name = createLibraryDto.Name, 
 					Address = createLibraryDto.Address,
                     UserId = httpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub)

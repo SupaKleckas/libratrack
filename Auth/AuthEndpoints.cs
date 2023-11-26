@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using Microsoft.IdentityModel.JsonWebTokens;
 using System;
+using Microsoft.AspNetCore.Http;
 
 namespace LibraTrack.Auth
 {
@@ -87,11 +88,22 @@ namespace LibraTrack.Auth
 
                 return Results.Ok(new SuccessfulLoginDto(accessToken, refreshToken));
             });
+
+            //logout
+            //app.MapPost("api/logout", async (UserManager<User> userManager, SignInManager<User> signInManager, JwtTokenService jwtTokenService, HttpContext httpContext) =>
+            //{
+
+            //    httpContext.Response.Cookies.Delete(".AspNetCore.Identity.Application");
+            //    await signInManager.SignOutAsync();
+
+            //    return Results.Ok();
+            //});
         }
 
         public record UserDto(string UserId, string Email, string Username);
         public record LoginDto(string Username, string Password);
         public record SuccessfulLoginDto(string AccessToken, string RefreshToken);
+        public record SuccessfulLogoutDto(string Username);
         public record RefreshAccessTokenDto(string RefreshToken);
         public record RegisterUserDto(string Username, string Email, string Password);
     }
