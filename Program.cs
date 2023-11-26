@@ -31,7 +31,7 @@ internal class Program
             // secure - consider a more secure solution such as
             // Cloud Secret Manager (https://cloud.google.com/secret-manager) to help
             // keep secrets safe.
-            Host = Environment.GetEnvironmentVariable("/cloudsql/vernal-guide-406312:europe-west3:postgres"), // e.g. '/cloudsql/project:region:instance'
+            Host = Environment.GetEnvironmentVariable("/cloudsql/vernal-guide-406312:europe-west3:postgres/.s.PGSQL.5432"), // e.g. '/cloudsql/project:region:instance/.s.PGSQL.5432'
             Username = Environment.GetEnvironmentVariable("postgres"), // e.g. 'my-db-user
             Password = Environment.GetEnvironmentVariable("dbpostgres"), // e.g. 'my-db-password'
             Database = Environment.GetEnvironmentVariable("postgres"), // e.g. 'my-database'
