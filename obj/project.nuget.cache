@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "JwQ6gMLIARa3xswRqSp56Mips8+affHcDAk4nV10Sh9b2+CRsAPojOEUBiz5yt0P4E32+J1RgDEHAYsXNG5y8g==",
+  "dgSpecHash": "r+FOfpnplef4zT/Y5e/hmijlb4hyzxQ22D/SIyeJMaqV60Kl8abcK4e76M7fQYQHJfvlHXGrxsLpU9gLP77+dQ==",
   "success": true,
-  "projectFilePath": "D:\\Documents\\Uni\\5 Semestras\\Saityno taikomuju programu projektavimas\\LibraTrack\\LibraTrack.csproj",
+  "projectFilePath": "D:\\Documents\\Uni\\5 Semestras\\Saitynai\\LibraTrack\\LibraTrack.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\RutaAdmin\\.nuget\\packages\\fluentvalidation\\11.8.0\\fluentvalidation.11.8.0.nupkg.sha512",
     "C:\\Users\\RutaAdmin\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\11.8.0\\fluentvalidation.dependencyinjectionextensions.11.8.0.nupkg.sha512",

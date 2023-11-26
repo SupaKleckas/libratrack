@@ -2642,11 +2642,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Documents\\Uni\\5 Semestras\\Saityno taikomuju programu projektavimas\\LibraTrack\\LibraTrack.csproj",
+      "projectUniqueName": "D:\\Documents\\Uni\\5 Semestras\\Saitynai\\LibraTrack\\LibraTrack.csproj",
       "projectName": "LibraTrack",
-      "projectPath": "D:\\Documents\\Uni\\5 Semestras\\Saityno taikomuju programu projektavimas\\LibraTrack\\LibraTrack.csproj",
+      "projectPath": "D:\\Documents\\Uni\\5 Semestras\\Saitynai\\LibraTrack\\LibraTrack.csproj",
       "packagesPath": "C:\\Users\\RutaAdmin\\.nuget\\packages\\",
-      "outputPath": "D:\\Documents\\Uni\\5 Semestras\\Saityno taikomuju programu projektavimas\\LibraTrack\\obj\\",
+      "outputPath": "D:\\Documents\\Uni\\5 Semestras\\Saitynai\\LibraTrack\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "D:\\Documents\\VisualStudio\\NuGetPackages"
