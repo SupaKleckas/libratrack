@@ -1,73 +1,74 @@
-﻿using LibraTrack.Data.Entities;
-using LibraTrack.Data;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using O9d.AspNet.FluentValidation;
 using Microsoft.AspNetCore.Http;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using LibraTrack.Auth.Model;
 using Microsoft.AspNetCore.Authorization;
+using LibraTrack.Data.Entities;
+using LibraTrack.Data;
 
 namespace LibraTrack
 {
-	public class LibrariesEndpoints
-	{
-		public static void AddLibraryApi(RouteGroupBuilder librariesGroup)
-		{
-			librariesGroup.MapGet("libraries", [Authorize(Roles = Roles.User)] async (LibDbContext dbContext, CancellationToken cancellationToken) =>
-			{
-				return (await dbContext.Libraries.ToListAsync(cancellationToken)).Select(library => new LibraryDto(library.Id, library.Name, library.Address));
+    public class LibrariesEndpoints
+    {
+        public static void AddLibraryApi(RouteGroupBuilder librariesGroup)
+        {
+            librariesGroup.MapGet("libraries", [Authorize(Roles = Roles.User)] async (LibDbContext dbContext, CancellationToken cancellationToken) =>
+            {
+                return (await dbContext.Libraries.ToListAsync(cancellationToken)).Select(library => new LibraryDto(library.Id, library.Name, library.Address));
 
-			});
+            });
 
-			librariesGroup.MapGet("libraries/{libraryId}", [Authorize(Roles = Roles.User)] async (int libraryId, LibDbContext dbContext) =>
-			{
-				var library = await dbContext.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId);
-				if (library == null)
-					return Results.NotFound();
+            librariesGroup.MapGet("libraries/{libraryId}", [Authorize(Roles = Roles.User)] async (int libraryId, LibDbContext dbContext) =>
+            {
+                var library = await dbContext.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId);
+                if (library == null)
+                    return Results.NotFound();
 
-				return Results.Ok(new LibraryDto(library.Id, library.Name, library.Address));
-			});
+                return Results.Ok(new LibraryDto(library.Id, library.Name, library.Address));
+            });
 
-			librariesGroup.MapPost("libraries", [Authorize(Roles = Roles.Admin)] async ([Validate] CreateLibraryDto createLibraryDto, HttpContext httpContext, LibDbContext dbContext) =>
-			{
-				var library = new Library {
-					Name = createLibraryDto.Name, 
-					Address = createLibraryDto.Address,
+            librariesGroup.MapPost("libraries", [Authorize(Roles = Roles.Admin)] async ([Validate] CreateLibraryDto createLibraryDto, HttpContext httpContext, LibDbContext dbContext) =>
+            {
+                var library = new Library
+                {
+                    Name = createLibraryDto.Name,
+                    Address = createLibraryDto.Address,
                     UserId = httpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub)
                 };
 
-				dbContext.Libraries.Add(library);
-				await dbContext.SaveChangesAsync();
+                dbContext.Libraries.Add(library);
+                await dbContext.SaveChangesAsync();
 
-				return Results.Created($"/api/libraries/{library.Id}", new LibraryDto(library.Id, library.Name, library.Address));
-			});
+                return Results.Created($"/api/libraries/{library.Id}", new LibraryDto(library.Id, library.Name, library.Address));
+            });
 
-			librariesGroup.MapPut("libraries/{libraryId}", [Authorize(Roles = Roles.Admin)] async (int libraryId, [Validate] UpdateLibraryDto updateLibraryDto, LibDbContext dbContext) =>
-			{
-				var library = await dbContext.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId);
-				if (library == null)
-					return Results.NotFound();
+            librariesGroup.MapPut("libraries/{libraryId}", [Authorize(Roles = Roles.Admin)] async (int libraryId, [Validate] UpdateLibraryDto updateLibraryDto, LibDbContext dbContext) =>
+            {
+                var library = await dbContext.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId);
+                if (library == null)
+                    return Results.NotFound();
 
-				library.Name = updateLibraryDto.Name;
-				dbContext.Update(library);
-				await dbContext.SaveChangesAsync();
+                library.Name = updateLibraryDto.Name;
+                dbContext.Update(library);
+                await dbContext.SaveChangesAsync();
 
-				return Results.Ok(new LibraryDto(library.Id, library.Name, library.Address));
-			});
+                return Results.Ok(new LibraryDto(library.Id, library.Name, library.Address));
+            });
 
-			librariesGroup.MapDelete("libraries/{libraryId}", [Authorize(Roles = Roles.Admin)] async (int libraryId, LibDbContext dbContext) =>
-			{
-				var library = await dbContext.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId);
-				if (library == null)
-					return Results.NotFound();
+            librariesGroup.MapDelete("libraries/{libraryId}", [Authorize(Roles = Roles.Admin)] async (int libraryId, LibDbContext dbContext) =>
+            {
+                var library = await dbContext.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId);
+                if (library == null)
+                    return Results.NotFound();
 
-				dbContext.Remove(library);
-				await dbContext.SaveChangesAsync();
+                dbContext.Remove(library);
+                await dbContext.SaveChangesAsync();
 
-				return Results.NoContent();
-			});
-		}
+                return Results.NoContent();
+            });
+        }
 
-	}
+    }
 }

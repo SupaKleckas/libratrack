@@ -1,8 +1,5 @@
 using FluentValidation;
-using LibraTrack;
-using LibraTrack.Data;
 using System.Text;
-using LibraTrack.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using O9d.AspNet.FluentValidation;
 using System.Data.Common;
@@ -11,10 +8,12 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using LibraTrack.Auth.Model;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using LibraTrack;
 using LibraTrack.Auth;
+using LibraTrack.Data;
+using LibraTrack.Auth.Model;
 
 internal class Program
 {

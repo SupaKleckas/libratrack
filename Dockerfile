@@ -4,22 +4,23 @@ WORKDIR ./
 
 # copy csproj and restore as distinct layers
 COPY *.csproj ./
-RUN dotnet restore -r /p:PublishReadyToRun=true
+RUN dotnet restore -r linux-musl-x64 /p:PublishReadyToRun=true
 
 # copy everything else and build app
-COPY . ./
-RUN dotnet publish -c release -o /app -r --self-contained true --no-restore /p:PublishReadyToRun=true /p:PublishSingleFile=true
+COPY . .
+RUN dotnet publish -c Release -o /app -r --self-contained true --no-restore /p:PublishReadyToRun=true /p:PublishSingleFile=true
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/runtime-deps:7.0-alpine-amd64
-WORKDIR ./
-COPY --from=build ./ .
+WORKDIR /app
+COPY --from=build /app .
+RUN ls /app
 ENTRYPOINT ["./LibraTrack"]
 
 ENV \
-	DOTNET_SYSTEM_GLOBILAZATION_INVARIANT=false \
-	LC_ALL=en_US.UTF8 \
-	LANG=en_US.UTF8
-RUN apk add --no-cache \
-	icu-data-full \
-	icu-libs
+     DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
+     LC_ALL=en_US.UTF-8 \
+     LANG=en_US.UTF-8
+ RUN apk add --no-cache \
+     icu-data-full \
+     icu-libs
