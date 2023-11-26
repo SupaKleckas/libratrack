@@ -26,9 +26,12 @@ internal class Program
 		builder.Services.AddDbContext<LibDbContext>();
 		builder.Services.AddTransient<JwtTokenService>();
         builder.Services.AddScoped<AuthDbSeeder>();
-        
 
-		builder.Services.AddIdentity<User, IdentityRole>()
+        var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+        var url = $"http://0.0.0.0:{port}";
+        var target = Environment.GetEnvironmentVariable("TARGET") ?? "World";
+
+        builder.Services.AddIdentity<User, IdentityRole>()
 			.AddEntityFrameworkStores<LibDbContext>()
 			.AddDefaultTokenProviders();
 
@@ -68,7 +71,7 @@ internal class Program
 
 		await dbSeeder.SeedAsync();
 
-		app.Run();
+		app.Run(url);
 	}
 }
 
