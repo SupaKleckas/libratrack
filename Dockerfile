@@ -17,10 +17,6 @@ COPY --from=build /app .
 RUN ls /app
 ENTRYPOINT ["./LibraTrack"]
 
-FROM php:7-apache
-RUN sed -i 's/Listen 80/Listen ${PORT}/' /etc/apache2/ports.conf
-ENV PORT=80
-
 ENV \
      DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
      LC_ALL=en_US.UTF-8 \
