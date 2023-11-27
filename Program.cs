@@ -19,55 +19,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using LibraTrack.Settings;
 
 internal class Program
 {
-    public static AppSettings AppSettings { get; private set; }
     public async static Task Main(string[] args)
 	{
         //Host=localhost;Database=dbLibraTrack;Username=postgres;Password=postgrespw;Port=5432;TrustServerCertificate=true
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-
-        var connectionString = new NpgsqlConnectionStringBuilder()
-        {
-            // The Cloud SQL proxy provides encryption between the proxy and instance.
-            SslMode = SslMode.Require,
-            Host = Environment.GetEnvironmentVariable("/cloudsql/vernal-guide-406312:europe-west3:postgres/.s.PGSQL.5432"), // e.g. '/cloudsql/project:region:instance/.s.PGSQL.5432'
-            Username = Environment.GetEnvironmentVariable("postgres"), // e.g. 'my-db-user
-            Password = Environment.GetEnvironmentVariable("dbpostgres"), // e.g. 'my-db-password'
-            Database = Environment.GetEnvironmentVariable("postgres"), // e.g. 'my-database'
-            TrustServerCertificate = true
-        };
-        connectionString.Pooling = true;
-
-        var config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false)
-                .Build();
-
-        //Read json config into AppSettings.
-        AppSettings = new AppSettings();
-        config.Bind(AppSettings);
-
-         //WebHost.CreateDefaultBuilder(args).ConfigureServices(services =>
-         //   services.AddGoogleDiagnosticsForAspNetCore(
-         //       AppSettings.GoogleCloudSettings.ProjectId,
-         //       AppSettings.GoogleCloudSettings.ServiceName,
-         //       AppSettings.GoogleCloudSettings.Version))
-         //   .UseStartup<Startup>()
-         //   .UsePortEnvironmentVariable();
-
-        /* possible db uri?
-            POSTGRESS_URI = postgresql:///postgres
-            ?host = /cloudsql/vernal-guide-406312:europe-west3:postgres/.s.PGSQL.5432
-            & user = postgres
-            & password = dbpostgres
-            & sslmode = require
-        */
-
-        //DbConnection connection = new NpgsqlConnection(connectionString.ConnectionString);
-		//connection.Open();
 
         var builder = WebApplication.CreateBuilder(args);
 		builder.Services.AddValidatorsFromAssemblyContaining<Program>();
@@ -75,9 +33,6 @@ internal class Program
 		builder.Services.AddTransient<JwtTokenService>();
         builder.Services.AddScoped<AuthDbSeeder>();
 
-        //var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-        //var url = $"http://0.0.0.0:{port}";
-        //var target = Environment.GetEnvironmentVariable("TARGET") ?? "World";
 
         builder.Services.AddIdentity<User, IdentityRole>()
 			.AddEntityFrameworkStores<LibDbContext>()
@@ -92,7 +47,7 @@ internal class Program
 		{
 			options.TokenValidationParameters.ValidAudience = builder.Configuration["Jwt:ValidAudience"];
             options.TokenValidationParameters.ValidIssuer = builder.Configuration["Jwt:ValidIssuer"];
-			options.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"])); //If somethings wrong, look at appsettings SECRET
+			options.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]));
         });
 
         builder.Services.AddAuthorization();
@@ -122,7 +77,7 @@ internal class Program
 
 		await dbSeeder.SeedAsync();
 
-		app.Run(); //url
+		app.Run();
 	}
 }
 
