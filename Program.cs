@@ -66,8 +66,8 @@ internal class Program
             & sslmode = require
         */
 
-        DbConnection connection = new NpgsqlConnection(connectionString.ConnectionString);
-		connection.Open();
+        //DbConnection connection = new NpgsqlConnection(connectionString.ConnectionString);
+		//connection.Open();
 
         var builder = WebApplication.CreateBuilder(args);
 		builder.Services.AddValidatorsFromAssemblyContaining<Program>();
@@ -114,6 +114,10 @@ internal class Program
 		app.UseAuthorization();
 
 		using var scope = app.Services.CreateScope();
+
+		var dbContext = scope.ServiceProvider.GetRequiredService<LibDbContext>();
+		dbContext.Database.Migrate();
+
 		var dbSeeder = scope.ServiceProvider.GetRequiredService<AuthDbSeeder>();
 
 		await dbSeeder.SeedAsync();
