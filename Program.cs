@@ -18,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 internal class Program
 {
@@ -30,7 +31,7 @@ internal class Program
         {
             // The Cloud SQL proxy provides encryption between the proxy and instance.
             SslMode = SslMode.Require,
-            Host = Environment.GetEnvironmentVariable("35.234.125.126"), // e.g. '/cloudsql/project:region:instance/.s.PGSQL.5432' /cloudsql/vernal-guide-406312:europe-west3:postgres
+            Host = Environment.GetEnvironmentVariable("/cloudsql/vernal-guide-406312:europe-west3:postgres/.s.PGSQL.5432"), // e.g. '/cloudsql/project:region:instance/.s.PGSQL.5432'
             Username = Environment.GetEnvironmentVariable("postgres"), // e.g. 'my-db-user
             Password = Environment.GetEnvironmentVariable("dbpostgres"), // e.g. 'my-db-password'
             Database = Environment.GetEnvironmentVariable("postgres"), // e.g. 'my-database'
@@ -38,12 +39,12 @@ internal class Program
         };
         connectionString.Pooling = true;
 
-        //var config = new ConfigurationBuilder()
-        //        .SetBasePath(Directory.GetCurrentDirectory())
-        //        .AddJsonFile("appsettings.json", optional: false)
-        //        .Build();
+        var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false)
+                .Build();
 
-        // Read json config into AppSettings.
+        //Read json config into AppSettings.
         //AppSettings = new AppSettings();
         //config.Bind(AppSettings);
 
@@ -56,6 +57,13 @@ internal class Program
         //.UseStartup<Startup>()
         //.UsePortEnvironmentVariable();
 
+        //possible db uri 
+        //
+        //      POSTGRESS_URI = postgresql:///postgres
+        //      ?host = /cloudsql/vernal-guide-406312:europe-west3:postgres/.s.PGSQL.5432
+        //      & user = postgres
+        //      & password = dbpostgres
+        //      & sslmode = require
 
         DbConnection connection = new NpgsqlConnection(connectionString.ConnectionString);
 		connection.Open();
