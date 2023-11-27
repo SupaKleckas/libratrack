@@ -58,13 +58,13 @@ internal class Program
          //   .UseStartup<Startup>()
          //   .UsePortEnvironmentVariable();
 
-        //possible db uri 
-        //
-        //      POSTGRESS_URI = postgresql:///postgres
-        //      ?host = /cloudsql/vernal-guide-406312:europe-west3:postgres/.s.PGSQL.5432
-        //      & user = postgres
-        //      & password = dbpostgres
-        //      & sslmode = require
+        /* possible db uri?
+            POSTGRESS_URI = postgresql:///postgres
+            ?host = /cloudsql/vernal-guide-406312:europe-west3:postgres/.s.PGSQL.5432
+            & user = postgres
+            & password = dbpostgres
+            & sslmode = require
+        */
 
         DbConnection connection = new NpgsqlConnection(connectionString.ConnectionString);
 		connection.Open();
@@ -75,9 +75,9 @@ internal class Program
 		builder.Services.AddTransient<JwtTokenService>();
         builder.Services.AddScoped<AuthDbSeeder>();
 
-        var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-        var url = $"http://0.0.0.0:{port}";
-        var target = Environment.GetEnvironmentVariable("TARGET") ?? "World";
+        //var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+        //var url = $"http://0.0.0.0:{port}";
+        //var target = Environment.GetEnvironmentVariable("TARGET") ?? "World";
 
         builder.Services.AddIdentity<User, IdentityRole>()
 			.AddEntityFrameworkStores<LibDbContext>()
@@ -118,7 +118,7 @@ internal class Program
 
 		await dbSeeder.SeedAsync();
 
-		app.Run(url);
+		app.Run(); //url
 	}
 }
 
