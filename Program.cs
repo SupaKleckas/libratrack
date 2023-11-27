@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using O9d.AspNet.FluentValidation;
 using System.Data.Common;
 using System.Net;
-using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Identity;
 using Npgsql;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -15,33 +14,51 @@ using LibraTrack;
 using LibraTrack.Auth;
 using LibraTrack.Data;
 using LibraTrack.Auth.Model;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore;
 
 internal class Program
 {
 	public async static Task Main(string[] args)
 	{
-		JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); //using standart
+        //Host=localhost;Database=dbLibraTrack;Username=postgres;Password=postgrespw;Port=5432;TrustServerCertificate=true
+        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); //using standart
 
         var connectionString = new NpgsqlConnectionStringBuilder()
         {
             // The Cloud SQL proxy provides encryption between the proxy and instance.
             SslMode = SslMode.Require,
-
-            // Note: Saving credentials in environment variables is convenient, but not
-            // secure - consider a more secure solution such as
-            // Cloud Secret Manager (https://cloud.google.com/secret-manager) to help
-            // keep secrets safe.
-            Host = Environment.GetEnvironmentVariable("/cloudsql/vernal-guide-406312:europe-west3:postgres"), // e.g. '/cloudsql/project:region:instance/.s.PGSQL.5432'
+            Host = Environment.GetEnvironmentVariable("35.234.125.126"), // e.g. '/cloudsql/project:region:instance/.s.PGSQL.5432' /cloudsql/vernal-guide-406312:europe-west3:postgres
             Username = Environment.GetEnvironmentVariable("postgres"), // e.g. 'my-db-user
             Password = Environment.GetEnvironmentVariable("dbpostgres"), // e.g. 'my-db-password'
             Database = Environment.GetEnvironmentVariable("postgres"), // e.g. 'my-database'
-			TrustServerCertificate = true
+            TrustServerCertificate = true
         };
         connectionString.Pooling = true;
 
+        //var config = new ConfigurationBuilder()
+        //        .SetBasePath(Directory.GetCurrentDirectory())
+        //        .AddJsonFile("appsettings.json", optional: false)
+        //        .Build();
+
+        // Read json config into AppSettings.
+        //AppSettings = new AppSettings();
+        //config.Bind(AppSettings);
+
+        //return WebHost.CreateDefaultBuilder(args)
+        //.ConfigureServices(services =>
+        //    services.AddGoogleDiagnosticsForAspNetCore(
+        //        AppSettings.GoogleCloudSettings.ProjectId,
+        //        AppSettings.GoogleCloudSettings.ServiceName,
+        //        AppSettings.GoogleCloudSettings.Version))
+        //.UseStartup<Startup>()
+        //.UsePortEnvironmentVariable();
+
+
         DbConnection connection = new NpgsqlConnection(connectionString.ConnectionString);
 		connection.Open();
-
 
         var builder = WebApplication.CreateBuilder(args);
 		builder.Services.AddValidatorsFromAssemblyContaining<Program>();
