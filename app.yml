@@ -9,4 +9,4 @@ env_variables:
     INSTANCE_HOST: cloudsql
 
 beta_settings:
-    cloud_sql_instances: "vernal-guide-406312:europe-west3:postgres=tcp:5432"
+    cloud_sql_instances: "vernal-guide-406312:europe-west3:postgres>=tcp:5432"

@@ -19,13 +19,15 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using LibraTrack.Settings;
 
 internal class Program
 {
-	public async static Task Main(string[] args)
+    public static AppSettings AppSettings { get; private set; }
+    public async static Task Main(string[] args)
 	{
         //Host=localhost;Database=dbLibraTrack;Username=postgres;Password=postgrespw;Port=5432;TrustServerCertificate=true
-        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); //using standart
+        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
         var connectionString = new NpgsqlConnectionStringBuilder()
         {
@@ -45,17 +47,16 @@ internal class Program
                 .Build();
 
         //Read json config into AppSettings.
-        //AppSettings = new AppSettings();
-        //config.Bind(AppSettings);
+        AppSettings = new AppSettings();
+        config.Bind(AppSettings);
 
-        //return WebHost.CreateDefaultBuilder(args)
-        //.ConfigureServices(services =>
-        //    services.AddGoogleDiagnosticsForAspNetCore(
-        //        AppSettings.GoogleCloudSettings.ProjectId,
-        //        AppSettings.GoogleCloudSettings.ServiceName,
-        //        AppSettings.GoogleCloudSettings.Version))
-        //.UseStartup<Startup>()
-        //.UsePortEnvironmentVariable();
+         //WebHost.CreateDefaultBuilder(args).ConfigureServices(services =>
+         //   services.AddGoogleDiagnosticsForAspNetCore(
+         //       AppSettings.GoogleCloudSettings.ProjectId,
+         //       AppSettings.GoogleCloudSettings.ServiceName,
+         //       AppSettings.GoogleCloudSettings.Version))
+         //   .UseStartup<Startup>()
+         //   .UsePortEnvironmentVariable();
 
         //possible db uri 
         //
@@ -94,7 +95,6 @@ internal class Program
 			options.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"])); //If somethings wrong, look at appsettings SECRET
         });
 
-		//builder.Services.AddAuthentication();
         builder.Services.AddAuthorization();
 
         var app = builder.Build();
