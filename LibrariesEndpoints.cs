@@ -84,7 +84,7 @@ namespace LibraTrack
 
 				if (library == null)
 				{
-					return Results.NotFound("Library not found");s
+					return Results.NotFound("Library not found");
 				}
 
 				if (httpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub) != library.UserId)
