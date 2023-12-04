@@ -50,7 +50,7 @@ namespace LibraTrack
             {
                 var library = await dbContext.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId);
                 if (library == null)
-                    return Results.NotFound();
+                    return Results.NotFound("Library not found");
 
                 library.Name = updateLibraryDto.Name;
                 dbContext.Update(library);
@@ -63,7 +63,7 @@ namespace LibraTrack
             {
                 var library = await dbContext.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId);
                 if (library == null)
-                    return Results.NotFound();
+                    return Results.NotFound("Library not found");
 
                 dbContext.Remove(library);
                 await dbContext.SaveChangesAsync();
@@ -84,7 +84,7 @@ namespace LibraTrack
 
 				if (library == null)
 				{
-					return Results.NotFound();
+					return Results.NotFound("Library not found");
 				}
 
 				if (httpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub) != library.UserId)

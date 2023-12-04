@@ -90,14 +90,14 @@ namespace LibraTrack.Auth
             });
 
             //logout
-            //app.MapPost("api/logout", async (UserManager<User> userManager, SignInManager<User> signInManager, JwtTokenService jwtTokenService, HttpContext httpContext) =>
-            //{
+            app.MapPost("api/logout", async (UserManager<User> userManager, SignInManager<User> signInManager, JwtTokenService jwtTokenService, HttpContext httpContext) =>
+            {
 
-            //    httpContext.Response.Cookies.Delete(".AspNetCore.Identity.Application");
-            //    await signInManager.SignOutAsync();
+                httpContext.Response.Cookies.Delete(".AspNetCore.Identity.Application");
+                await signInManager.SignOutAsync();
 
-            //    return Results.Ok();
-            //});
+                return Results.Ok();
+            });
         }
 
         public record UserDto(string UserId, string Email, string Username);
