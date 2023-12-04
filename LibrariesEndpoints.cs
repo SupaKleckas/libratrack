@@ -71,7 +71,7 @@ namespace LibraTrack
                 return Results.NoContent();
             });
 
-			librariesGroup.MapPut("libraries/{libraryId:int}/addWorker", [Authorize(Roles = Roles.Admin)] async (int libraryId, HttpContext httpContext, UserManager<User> userManager, [Validate] SetUserDto setDto, LibDbContext dbContext) =>
+			librariesGroup.MapPut("libraries/{libraryId}/addWorker", [Authorize(Roles = Roles.Admin)] async (int libraryId, HttpContext httpContext, UserManager<User> userManager, [Validate] SetUserDto setDto, LibDbContext dbContext) =>
 			{
 
 				var user = await userManager.FindByNameAsync(setDto.UserName);
@@ -80,11 +80,11 @@ namespace LibraTrack
 					return Results.NotFound("User not registered");
 				}
 
-				var library = await dbContext.Libraries.FirstOrDefaultAsync<Library>(l => l.Id == libraryId);
+				var library = await dbContext.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId);
 
 				if (library == null)
 				{
-					return Results.NotFound("Library not found");
+					return Results.NotFound("Library not found");s
 				}
 
 				if (httpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub) != library.UserId)

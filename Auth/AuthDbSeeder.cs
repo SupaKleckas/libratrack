@@ -43,7 +43,7 @@ namespace LibraTrack.Auth
 
             if(existingAdminUser == null)
             {
-                var createAdminUserResult = await _userManager.CreateAsync(newAdminUser, "SuperCoolPassword123!"); //password galima is config pasiimt?
+                var createAdminUserResult = await _userManager.CreateAsync(newAdminUser, "SuperCoolPassword123!");
                 if (createAdminUserResult.Succeeded)
                 {
                     await _userManager.AddToRolesAsync(newAdminUser, Roles.All);
