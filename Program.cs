@@ -52,7 +52,7 @@ internal class Program
 
         builder.Services.AddAuthorization();
 
-        var app = builder.Build();
+		var app = builder.Build();
 
         var librariesGroup = app.MapGroup("/api").WithValidationFilter();
 		LibrariesEndpoints.AddLibraryApi(librariesGroup);

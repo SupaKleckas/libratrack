@@ -5,6 +5,6 @@ namespace LibraTrack.Auth.Model
     public class User : IdentityUser
     {
         public bool forceRelogin { get; set; }
-		public int? AssignedLibrary { get; set; }
+		//public int? AssignedLibrary { get; set; }
 	}
 }

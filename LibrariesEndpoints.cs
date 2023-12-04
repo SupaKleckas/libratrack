@@ -71,44 +71,44 @@ namespace LibraTrack
                 return Results.NoContent();
             });
 
-			librariesGroup.MapPut("libraries/{libraryId}/addWorker", [Authorize(Roles = Roles.Admin)] async (int libraryId, HttpContext httpContext, UserManager<User> userManager, [Validate] SetUserDto setDto, LibDbContext dbContext) =>
-			{
+			//librariesGroup.MapPut("libraries/{libraryId}/addWorker", [Authorize(Roles = Roles.Admin)] async (int libraryId, HttpContext httpContext, UserManager<User> userManager, [Validate] SetUserDto setDto, LibDbContext dbContext) =>
+			//{
 
-				var user = await userManager.FindByNameAsync(setDto.UserName);
-				if (user == null)
-				{
-					return Results.NotFound("User not registered");
-				}
+			//	var user = await userManager.FindByNameAsync(setDto.UserName);
+			//	if (user == null)
+			//	{
+			//		return Results.NotFound("User not registered");
+			//	}
 
-				var library = await dbContext.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId);
+			//	var library = await dbContext.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId);
 
-				if (library == null)
-				{
-					return Results.NotFound("Library not found");
-				}
+			//	if (library == null)
+			//	{
+			//		return Results.NotFound("Library not found");
+			//	}
 
-				if (httpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub) != library.UserId)
-				{
-					return Results.Forbid();
-				}
+			//	if (httpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub) != library.UserId)
+			//	{
+			//		return Results.Forbid();
+			//	}
 
-				user.AssignedLibrary = libraryId;
+			//	user.AssignedLibrary = libraryId;
 
-				await dbContext.SaveChangesAsync();
-				return Results.Ok(new SetUserDto(UserName: setDto.UserName));
+			//	await dbContext.SaveChangesAsync();
+			//	return Results.Ok(new SetUserDto(UserName: setDto.UserName));
 
 
-			});
+			//});
 		}
 
-		public record SetUserDto(string UserName);
-		public class SetLibraryValidator : AbstractValidator<SetUserDto>
-		{
-			public SetLibraryValidator()
-			{
-				RuleFor(dto => dto.UserName).NotEmpty().NotNull();
-			}
-		}
+		//public record SetUserDto(string UserName);
+		//public class SetLibraryValidator : AbstractValidator<SetUserDto>
+		//{
+		//	public SetLibraryValidator()
+		//	{
+		//		RuleFor(dto => dto.UserName).NotEmpty().NotNull();
+		//	}
+		//}
 
 	}
 }
