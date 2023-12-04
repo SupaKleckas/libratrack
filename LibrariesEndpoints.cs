@@ -7,6 +7,8 @@ using LibraTrack.Auth.Model;
 using Microsoft.AspNetCore.Authorization;
 using LibraTrack.Data.Entities;
 using LibraTrack.Data;
+using FluentValidation;
+using Microsoft.AspNetCore.Identity;
 
 namespace LibraTrack
 {
@@ -68,7 +70,45 @@ namespace LibraTrack
 
                 return Results.NoContent();
             });
-        }
 
-    }
+			librariesGroup.MapPut("libraries/{libraryId:int}/addWorker", [Authorize(Roles = Roles.Admin)] async (int libraryId, HttpContext httpContext, UserManager<User> userManager, [Validate] SetUserDto setDto, LibDbContext dbContext) =>
+			{
+
+				var user = await userManager.FindByNameAsync(setDto.UserName);
+				if (user == null)
+				{
+					return Results.NotFound("User not registered");
+				}
+
+				var library = await dbContext.Libraries.FirstOrDefaultAsync<Library>(l => l.Id == libraryId);
+
+				if (library == null)
+				{
+					return Results.NotFound();
+				}
+
+				if (httpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub) != library.UserId)
+				{
+					return Results.Forbid();
+				}
+
+				user.AssignedLibrary = libraryId;
+
+				await dbContext.SaveChangesAsync();
+				return Results.Ok(new SetUserDto(UserName: setDto.UserName));
+
+
+			});
+		}
+
+		public record SetUserDto(string UserName);
+		public class SetLibraryValidator : AbstractValidator<SetUserDto>
+		{
+			public SetLibraryValidator()
+			{
+				RuleFor(dto => dto.UserName).NotEmpty().NotNull();
+			}
+		}
+
+	}
 }
