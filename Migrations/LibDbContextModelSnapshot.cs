@@ -30,6 +30,9 @@ namespace LibraTrack.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("AssignedLibrary")
+                        .HasColumnType("integer");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
@@ -148,13 +151,7 @@ namespace LibraTrack.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Libraries");
                 });
@@ -177,15 +174,9 @@ namespace LibraTrack.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("LibraryId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Sections");
                 });
@@ -341,17 +332,6 @@ namespace LibraTrack.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("LibraTrack.Data.Entities.Library", b =>
-                {
-                    b.HasOne("LibraTrack.Auth.Model.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("LibraTrack.Data.Entities.Section", b =>
                 {
                     b.HasOne("LibraTrack.Data.Entities.Library", "Library")
@@ -360,15 +340,7 @@ namespace LibraTrack.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LibraTrack.Auth.Model.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Library");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

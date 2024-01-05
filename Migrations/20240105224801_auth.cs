@@ -7,32 +7,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LibraTrack.Migrations
 {
     /// <inheritdoc />
-    public partial class identity : Migration
+    public partial class auth : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "UserId",
-                table: "Sections",
-                type: "text",
-                nullable: false,
-                defaultValue: "");
-
-            migrationBuilder.AddColumn<string>(
-                name: "UserId",
-                table: "Libraries",
-                type: "text",
-                nullable: false,
-                defaultValue: "");
-
-            migrationBuilder.AddColumn<string>(
-                name: "UserId",
-                table: "Books",
-                type: "text",
-                nullable: false,
-                defaultValue: "");
-
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -53,6 +32,7 @@ namespace LibraTrack.Migrations
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     forceRelogin = table.Column<bool>(type: "boolean", nullable: false),
+                    AssignedLibrary = table.Column<int>(type: "integer", nullable: true),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -71,6 +51,20 @@ namespace LibraTrack.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Libraries",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Address = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Libraries", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -179,20 +173,57 @@ namespace LibraTrack.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Sections_UserId",
-                table: "Sections",
-                column: "UserId");
+            migrationBuilder.CreateTable(
+                name: "Sections",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    BookCount = table.Column<int>(type: "integer", nullable: false),
+                    LibraryId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sections", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Sections_Libraries_LibraryId",
+                        column: x => x.LibraryId,
+                        principalTable: "Libraries",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Libraries_UserId",
-                table: "Libraries",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Books_UserId",
-                table: "Books",
-                column: "UserId");
+            migrationBuilder.CreateTable(
+                name: "Books",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    PublishYear = table.Column<int>(type: "integer", nullable: false),
+                    Publisher = table.Column<string>(type: "text", nullable: false),
+                    Author = table.Column<string>(type: "text", nullable: false),
+                    Gendre = table.Column<string>(type: "text", nullable: false),
+                    SectionId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Books", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Books_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Books_Sections_SectionId",
+                        column: x => x.SectionId,
+                        principalTable: "Sections",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -231,46 +262,25 @@ namespace LibraTrack.Migrations
                 column: "NormalizedUserName",
                 unique: true);
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_Books_AspNetUsers_UserId",
+            migrationBuilder.CreateIndex(
+                name: "IX_Books_SectionId",
                 table: "Books",
-                column: "UserId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                column: "SectionId");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_Libraries_AspNetUsers_UserId",
-                table: "Libraries",
-                column: "UserId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+            migrationBuilder.CreateIndex(
+                name: "IX_Books_UserId",
+                table: "Books",
+                column: "UserId");
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_Sections_AspNetUsers_UserId",
+            migrationBuilder.CreateIndex(
+                name: "IX_Sections_LibraryId",
                 table: "Sections",
-                column: "UserId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                column: "LibraryId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Books_AspNetUsers_UserId",
-                table: "Books");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Libraries_AspNetUsers_UserId",
-                table: "Libraries");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_Sections_AspNetUsers_UserId",
-                table: "Sections");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -287,34 +297,19 @@ namespace LibraTrack.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Books");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
-            migrationBuilder.DropIndex(
-                name: "IX_Sections_UserId",
-                table: "Sections");
+            migrationBuilder.DropTable(
+                name: "Sections");
 
-            migrationBuilder.DropIndex(
-                name: "IX_Libraries_UserId",
-                table: "Libraries");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Books_UserId",
-                table: "Books");
-
-            migrationBuilder.DropColumn(
-                name: "UserId",
-                table: "Sections");
-
-            migrationBuilder.DropColumn(
-                name: "UserId",
-                table: "Libraries");
-
-            migrationBuilder.DropColumn(
-                name: "UserId",
-                table: "Books");
+            migrationBuilder.DropTable(
+                name: "Libraries");
         }
     }
 }

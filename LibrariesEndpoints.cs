@@ -9,6 +9,8 @@ using LibraTrack.Data.Entities;
 using LibraTrack.Data;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
+using static LibraTrack.Auth.AuthEndpoints;
+using System.Net.Http;
 
 namespace LibraTrack
 {
@@ -18,15 +20,24 @@ namespace LibraTrack
         {
             librariesGroup.MapGet("libraries", [Authorize(Roles = Roles.User)] async (LibDbContext dbContext, CancellationToken cancellationToken) =>
             {
+
                 return (await dbContext.Libraries.ToListAsync(cancellationToken)).Select(library => new LibraryDto(library.Id, library.Name, library.Address));
 
             });
 
-            librariesGroup.MapGet("libraries/{libraryId}", [Authorize(Roles = Roles.User)] async (int libraryId, LibDbContext dbContext) =>
+            librariesGroup.MapGet("libraries/{libraryId}", [Authorize(Roles = Roles.User)] async (int libraryId, LibDbContext dbContext, HttpContext httpContext, UserManager<User> userManager) =>
             {
                 var library = await dbContext.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId);
                 if (library == null)
                     return Results.NotFound();
+
+                var userId = httpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+                var user = await userManager.FindByIdAsync(userId);
+
+                if (user.AssignedLibrary != libraryId)
+                {
+                    return Results.Forbid();
+                }
 
                 return Results.Ok(new LibraryDto(library.Id, library.Name, library.Address));
             });
@@ -37,7 +48,7 @@ namespace LibraTrack
                 {
                     Name = createLibraryDto.Name,
                     Address = createLibraryDto.Address,
-                    UserId = httpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub)
+                    //UserId = httpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub)
                 };
 
                 dbContext.Libraries.Add(library);
@@ -71,44 +82,44 @@ namespace LibraTrack
                 return Results.NoContent();
             });
 
-			//librariesGroup.MapPut("libraries/{libraryId}/addWorker", [Authorize(Roles = Roles.Admin)] async (int libraryId, HttpContext httpContext, UserManager<User> userManager, [Validate] SetUserDto setDto, LibDbContext dbContext) =>
-			//{
+            librariesGroup.MapPut("libraries/{libraryId}/addWorker", [Authorize(Roles = Roles.Admin)] async (int libraryId, HttpContext httpContext, UserManager<User> userManager, [Validate] SetUserDto setDto, LibDbContext dbContext) =>
+            {
 
-			//	var user = await userManager.FindByNameAsync(setDto.UserName);
-			//	if (user == null)
-			//	{
-			//		return Results.NotFound("User not registered");
-			//	}
+                var user = await userManager.FindByNameAsync(setDto.UserName);
+                if (user == null)
+                {
+                    return Results.NotFound("User not found");
+                }
 
-			//	var library = await dbContext.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId);
+                var library = await dbContext.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId);
 
-			//	if (library == null)
-			//	{
-			//		return Results.NotFound("Library not found");
-			//	}
+                if (library == null)
+                {
+                    return Results.NotFound("Library not found");
+                }
 
-			//	if (httpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub) != library.UserId)
-			//	{
-			//		return Results.Forbid();
-			//	}
+                //if (httpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub) != library.UserId)
+                //{
+                //    return Results.Forbid();
+                //}
 
-			//	user.AssignedLibrary = libraryId;
+                user.AssignedLibrary = libraryId;
 
-			//	await dbContext.SaveChangesAsync();
-			//	return Results.Ok(new SetUserDto(UserName: setDto.UserName));
+                await dbContext.SaveChangesAsync();
+                return Results.Ok(new SetUserDto(UserName: setDto.UserName));
 
 
-			//});
-		}
+            });
+        }
 
-		//public record SetUserDto(string UserName);
-		//public class SetLibraryValidator : AbstractValidator<SetUserDto>
-		//{
-		//	public SetLibraryValidator()
-		//	{
-		//		RuleFor(dto => dto.UserName).NotEmpty().NotNull();
-		//	}
-		//}
+        public record SetUserDto(string UserName);
+        public class SetLibraryValidator : AbstractValidator<SetUserDto>
+        {
+            public SetLibraryValidator()
+            {
+                RuleFor(dto => dto.UserName).NotEmpty().NotNull();
+            }
+        }
 
-	}
+    }
 }

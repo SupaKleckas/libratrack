@@ -45,7 +45,7 @@ namespace LibraTrack
 					Title = createSectionDto.Title,
 					BookCount = 0,
 					Library = library,
-                    UserId = httpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub)
+                    //UserId = httpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub)
                 };
 
 				dbContext.Sections.Add(section);

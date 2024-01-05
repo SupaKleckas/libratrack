@@ -10,9 +10,9 @@ namespace LibraTrack.Data.Entities
         public required string Name { get; set; }
         public required string Address { get; set; }
 
-        [Required]
-        public required string UserId { get; set; }
-        public User User { get; set; }
+        //[Required]
+        //public required string UserId { get; set; }
+        //public User User { get; set; }
     }
 
     public record LibraryDto(int Id, string Name, string Address);

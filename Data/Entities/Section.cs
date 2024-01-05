@@ -12,9 +12,9 @@ namespace LibraTrack.Data.Entities
 
         public required Library Library { get; set; }
 
-        [Required]
-        public required string UserId { get; set; }
-        public User User { get; set; }
+        //[Required]
+        //public required string UserId { get; set; }
+        //public User User { get; set; }
 
     }
 
