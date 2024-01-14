@@ -34,7 +34,6 @@ namespace LibraTrack.Auth
                     return Results.UnprocessableEntity();
                 }
 
-
                 await userManager.AddToRoleAsync(newUser, Roles.User);
 
                 return Results.Created("api/login", new UserDto(newUser.Id, newUser.Email, newUser.UserName));
@@ -62,7 +61,8 @@ namespace LibraTrack.Auth
                 var accessToken = jwtTokenService.CreateAccessToken(user.UserName, user.Id, roles);
                 var refreshToken = jwtTokenService.CreateRefreshToken(user.Id);
 
-                return Results.Ok(new SuccessfulLoginDto(accessToken, refreshToken));
+                //Console.WriteLine(user.UserName + " assigned to " + user.AssignedLibrary + " id");
+                return Results.Ok(new SuccessfulLoginDto(accessToken, refreshToken, user.AssignedLibrary));
             });
 
             //accesstoken
@@ -85,24 +85,21 @@ namespace LibraTrack.Auth
                 var accessToken = jwtTokenService.CreateAccessToken(user.UserName, user.Id, roles);
                 var refreshToken = jwtTokenService.CreateRefreshToken(user.Id);
 
-
-                return Results.Ok(new SuccessfulLoginDto(accessToken, refreshToken));
+                return Results.Ok(new SuccessfulLoginDto(accessToken, refreshToken, user.AssignedLibrary));
             });
 
             //logout
             app.MapPost("api/logout", async (UserManager<User> userManager, SignInManager<User> signInManager, JwtTokenService jwtTokenService, HttpContext httpContext) =>
             {
-
                 httpContext.Response.Cookies.Delete(".AspNetCore.Identity.Application");
                 await signInManager.SignOutAsync();
-
                 return Results.Ok();
             });
         }
 
         public record UserDto(string UserId, string Email, string Username);
         public record LoginDto(string Username, string Password);
-        public record SuccessfulLoginDto(string AccessToken, string RefreshToken);
+        public record SuccessfulLoginDto(string AccessToken, string RefreshToken, int? AssignedLibrary);
         public record SuccessfulLogoutDto(string Username);
         public record RefreshAccessTokenDto(string RefreshToken);
         public record RegisterUserDto(string Username, string Email, string Password);

@@ -28,11 +28,22 @@ internal class Program
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
         var builder = WebApplication.CreateBuilder(args);
-		builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("CORSPolicy", builder =>
+            {
+                builder
+				.AllowAnyMethod()
+                .AllowAnyHeader()
+                .WithOrigins("http://localhost:3000", "https://coral-app-4hvmu.ondigitalocean.app/");
+            });
+        });
+
+        builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 		builder.Services.AddDbContext<LibDbContext>();
 		builder.Services.AddTransient<JwtTokenService>();
         builder.Services.AddScoped<AuthDbSeeder>();
-
 
         builder.Services.AddIdentity<User, IdentityRole>()
 			.AddEntityFrameworkStores<LibDbContext>()
@@ -54,6 +65,8 @@ internal class Program
 
 		var app = builder.Build();
 
+        app.UseCors("CORSPolicy");
+
         var librariesGroup = app.MapGroup("/api").WithValidationFilter();
 		LibrariesEndpoints.AddLibraryApi(librariesGroup);
 
@@ -70,8 +83,8 @@ internal class Program
 
 		using var scope = app.Services.CreateScope();
 
-		var dbContext = scope.ServiceProvider.GetRequiredService<LibDbContext>();
-		dbContext.Database.Migrate();
+		//var dbContext = scope.ServiceProvider.GetRequiredService<LibDbContext>();
+		//dbContext.Database.Migrate();
 
 		var dbSeeder = scope.ServiceProvider.GetRequiredService<AuthDbSeeder>();
 

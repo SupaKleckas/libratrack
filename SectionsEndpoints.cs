@@ -49,9 +49,11 @@ namespace LibraTrack
                 };
 
 				dbContext.Sections.Add(section);
+
+
 				await dbContext.SaveChangesAsync();
 
-				return Results.Created($"/api/libraries/{library.Id}/sections/{section.Id}", new SectionDto(section.Id, section.Title, section.BookCount));
+                return Results.Created($"/api/libraries/{library.Id}/sections/{section.Id}", new SectionDto(section.Id, section.Title, section.BookCount));
 			});
 
 			sectionsGroup.MapPut("sections/{sectionId}", [Authorize(Roles = Roles.Admin)] async (int libraryId, int sectionId, [Validate] UpdateSectionDto updateSectionDto, LibDbContext dbContext) =>
