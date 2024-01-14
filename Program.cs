@@ -36,7 +36,7 @@ internal class Program
                 builder
 				.AllowAnyMethod()
                 .AllowAnyHeader()
-                .WithOrigins("http://localhost:3000", "https://coral-app-4hvmu.ondigitalocean.app/");
+                .WithOrigins("http://localhost:3000", "https://coral-app-4hvmu.ondigitalocean.app/", "https://coral-app-2-mkwld.ondigitalocean.app/");
             });
         });
 
